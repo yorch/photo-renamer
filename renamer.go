@@ -44,6 +44,9 @@ func findAvailablePathname(pathname string, currentFilename string, formattedDat
 	count := 0
 	for count < 5 {
 		newFilename := fmt.Sprintf("%s%s", formattedDatetime, path.Ext(pathname))
+		if currentFilename == newFilename {
+			return "", errors.New("- File already renamed: " + currentFilename)
+		}
 		if count > 0 {
 			newFilename = fmt.Sprintf("%s-%v%s", formattedDatetime, count, path.Ext(pathname))
 		}
@@ -54,7 +57,7 @@ func findAvailablePathname(pathname string, currentFilename string, formattedDat
 		}
 		count += 1
 	}
-	return "", errors.New("Could not find available filename for " + currentFilename)
+	return "", errors.New("x Could not find available filename for: " + currentFilename)
 }
 
 func main() {

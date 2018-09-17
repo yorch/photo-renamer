@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/rwcarlsen/goexif/exif"
@@ -18,20 +19,42 @@ func visit(pathname string, f os.FileInfo, err error) error {
 	exifData, err := exif.Decode(openedFile)
 
 	if err != nil {
-		fmt.Printf("x Unable to load EXIF data for file: %s", pathname)
+		fmt.Printf("x Unable to load EXIF data for file: %s\n", pathname)
 		return nil
 	}
 
+	currentFilename := f.Name()
 	exifDatetime, _ := exifData.DateTime()
+	formattedDatetime := exifDatetime.Format("20060102030405")
+	newPathname, err := findAvailablePathname(pathname, currentFilename, formattedDatetime)
 
-	newFilename := fmt.Sprintf("%s%s", exifDatetime.Format("20060102030405"), path.Ext(pathname))
-	newPathname := strings.ToLower(strings.Replace(pathname, f.Name(), newFilename, 1))
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return nil
+	}
 
 	os.Rename(pathname, newPathname)
 	fmt.Printf("✓ Renamed to: %s\n", newPathname)
 	counter += 1
 
 	return nil
+}
+
+func findAvailablePathname(pathname string, currentFilename string, formattedDatetime string) (string, error) {
+	count := 0
+	for count < 5 {
+		newFilename := fmt.Sprintf("%s%s", formattedDatetime, path.Ext(pathname))
+		if count > 0 {
+			newFilename = fmt.Sprintf("%s-%v%s", formattedDatetime, count, path.Ext(pathname))
+		}
+		newPathname := strings.ToLower(strings.Replace(pathname, currentFilename, newFilename, 1))
+
+		if _, err := os.Stat(newPathname); err != nil {
+			return newPathname, nil
+		}
+		count += 1
+	}
+	return "", errors.New("Could not find available filename for " + currentFilename)
 }
 
 func main() {
@@ -42,5 +65,5 @@ func main() {
 	filepath.Walk(directory, visit)
 	endTime := time.Now()
 
-	fmt.Printf("\n\nʕ◔ϖ◔ʔ I successfully renamed %d photos in %s", counter, endTime.Sub(startTime))
+	fmt.Printf("\n\nʕ◔ϖ◔ʔ I successfully renamed %d photos in %s\n", counter, endTime.Sub(startTime))
 }

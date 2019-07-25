@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/rwcarlsen/goexif/exif"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/rwcarlsen/goexif/exif"
 )
 
 var counter int = 0

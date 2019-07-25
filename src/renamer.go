@@ -1,15 +1,17 @@
+// Script original from: https://gist.github.com/eko/6b0caaefeaf82f2aa202804743040292
 package main
 
 import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/rwcarlsen/goexif/exif"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/rwcarlsen/goexif/exif"
 )
 
 var counter int = 0
@@ -25,7 +27,7 @@ func visit(pathname string, f os.FileInfo, err error) error {
 
 	currentFilename := f.Name()
 	exifDatetime, _ := exifData.DateTime()
-	formattedDatetime := exifDatetime.Format("20060102030405")
+	formattedDatetime := exifDatetime.Format("20060102150405")
 	newPathname, err := findAvailablePathname(pathname, currentFilename, formattedDatetime)
 
 	if err != nil {

@@ -17,27 +17,29 @@ import (
 var counter int = 0
 
 func visit(pathname string, f os.FileInfo, err error) error {
-	openedFile, _ := os.Open(pathname)
-	exifData, err := exif.Decode(openedFile)
+	if !f.IsDir() {
+		openedFile, _ := os.Open(pathname)
+		exifData, err := exif.Decode(openedFile)
 
-	if err != nil {
-		fmt.Printf("x Unable to load EXIF data for file: %s\n", pathname)
-		return nil
+		if err != nil {
+			fmt.Printf("x Unable to load EXIF data for file: %s\n", pathname)
+			return nil
+		}
+
+		currentFilename := f.Name()
+		exifDatetime, _ := exifData.DateTime()
+		formattedDatetime := exifDatetime.Format("20060102150405")
+		newPathname, err := findAvailablePathname(pathname, currentFilename, formattedDatetime)
+
+		if err != nil {
+			fmt.Printf("%s\n", err)
+			return nil
+		}
+
+		os.Rename(pathname, newPathname)
+		fmt.Printf("✓ Renamed to: %s\n", newPathname)
+		counter += 1
 	}
-
-	currentFilename := f.Name()
-	exifDatetime, _ := exifData.DateTime()
-	formattedDatetime := exifDatetime.Format("20060102150405")
-	newPathname, err := findAvailablePathname(pathname, currentFilename, formattedDatetime)
-
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return nil
-	}
-
-	os.Rename(pathname, newPathname)
-	fmt.Printf("✓ Renamed to: %s\n", newPathname)
-	counter += 1
 
 	return nil
 }
@@ -66,9 +68,11 @@ func main() {
 	flag.Parse()
 	directory := flag.Arg(0)
 
+	fmt.Printf("\n\nStarting photo-renamer\n======================\n\n")
+
 	startTime := time.Now()
 	filepath.Walk(directory, visit)
 	endTime := time.Now()
 
-	fmt.Printf("\n\nʕ◔ϖ◔ʔ I successfully renamed %d photos in %s\n", counter, endTime.Sub(startTime))
+	fmt.Printf("\n\nʕ◔ϖ◔ʔ I successfully renamed %d photos in %s\n\n", counter, endTime.Sub(startTime))
 }

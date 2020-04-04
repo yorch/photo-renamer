@@ -1,0 +1,10 @@
+services:
+  - docker
+
+before_install:
+  - docker build -t yorch/photo-renamer .
+
+script:
+  - docker run -d --name checker yorch/photo-renamer
+  - docker logs checker
+  - docker ps -a

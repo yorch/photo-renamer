@@ -1,9 +1,29 @@
+/*
+Copyright © 2020 Jorge Barnaby <jorge.barnaby@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 // Script original from: https://gist.github.com/eko/6b0caaefeaf82f2aa202804743040292
-package main
+package cmd
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"os"
 	"path"
@@ -12,6 +32,7 @@ import (
 	"time"
 
 	"github.com/rwcarlsen/goexif/exif"
+	"github.com/spf13/cobra"
 )
 
 var counter int = 0
@@ -38,7 +59,7 @@ func visit(pathname string, f os.FileInfo, err error) error {
 
 		os.Rename(pathname, newPathname)
 		fmt.Printf("✓ Renamed to: %s\n", newPathname)
-		counter += 1
+		counter++
 	}
 
 	return nil
@@ -59,15 +80,13 @@ func findAvailablePathname(pathname string, currentFilename string, formattedDat
 		if _, err := os.Stat(newPathname); err != nil {
 			return newPathname, nil
 		}
-		count += 1
+		count++
 	}
 	return "", errors.New("x Could not find available filename for: " + currentFilename)
 }
 
-func main() {
-	flag.Parse()
-	directory := flag.Arg(0)
-
+func renamer(cmd *cobra.Command, args []string) {
+	directory := args[0]
 	fmt.Printf("\n\nStarting photo-renamer\n======================\n\n")
 
 	startTime := time.Now()
@@ -76,3 +95,22 @@ func main() {
 
 	fmt.Printf("\n\nʕ◔ϖ◔ʔ I successfully renamed %d photos in %s\n\n", counter, endTime.Sub(startTime))
 }
+
+func renamerArgs(cmd *cobra.Command, args []string) error {
+	if len(args) < 1 {
+		return errors.New("requires a directory argument")
+	}
+	return nil
+}
+
+// var renamerCmd = &cobra.Command{
+// 	Use:   "renamer",
+// 	Short: "Renames image files based on their EXIF info",
+// 	Long:  "",
+// 	Args:  renamerArgs,
+// 	Run:   renamer,
+// }
+
+// func init() {
+// 	rootCmd.AddCommand(renamerCmd)
+// }

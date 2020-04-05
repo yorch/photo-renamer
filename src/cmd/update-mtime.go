@@ -64,7 +64,6 @@ func updateMTime(cmd *cobra.Command, args []string) {
 	endTime := time.Now()
 
 	fmt.Printf("\n\nʕ◔ϖ◔ʔ I successfully updated %d photos in %s\n", mtimeCounter, endTime.Sub(startTime))
-	fmt.Println("updatetime called")
 }
 
 var updateMTimeCmd = &cobra.Command{

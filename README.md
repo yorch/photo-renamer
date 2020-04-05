@@ -1,6 +1,7 @@
 # photo-renamer
 
 [![Build Status](https://travis-ci.org/yorch/photo-renamer.svg?branch=master)](https://travis-ci.org/yorch/photo-renamer)
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/yorch/photo-renamer)](https://hub.docker.com/r/yorch/photo-renamer)
 [![](https://images.microbadger.com/badges/image/yorch/photo-renamer.svg)](https://microbadger.com/images/yorch/photo-renamer)
 [![](https://images.microbadger.com/badges/version/yorch/photo-renamer.svg)](https://microbadger.com/images/yorch/photo-renamer)
 

@@ -66,10 +66,11 @@ go run main.go
 
 ## TODO
 
-- Add a flag to backup original files.
-- Configurable naming format.
-- Make updatemtime as a flag.
-- Extract common logic from `renamer.go` and `update-mtime.go` into a module.
+- [ ] Add a flag to backup original files.
+- [ ] Configurable naming format.
+- [ ] Make updatemtime as a flag.
+- [ ] Extract common logic from `renamer.go` and `update-mtime.go` into a module.
+- [ ] Update Travis CI pipeline to upload compiled Go binary to Github releases.
 
 ## Credits
 

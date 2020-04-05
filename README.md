@@ -64,6 +64,13 @@ cd src/
 go run main.go
 ```
 
+## TODO
+
+- Add a flag to backup original files.
+- Configurable naming format.
+- Make updatemtime as a flag.
+- Extract common logic from `renamer.go` and `update-mtime.go` into a module.
+
 ## Credits
 
 Script originally taken from [here](https://gist.github.com/eko/6b0caaefeaf82f2aa202804743040292),

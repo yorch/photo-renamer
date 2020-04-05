@@ -33,10 +33,17 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "photo-renamer",
-	Short: "Images tool based on their EXIF info",
-	Long:  ``,
-	Args:  renamerArgs,
-	Run:   renamer,
+	Short: "Easily rename your photos to match the time and date they were taken",
+	Long: `
+PHOTO RENAMER
+-------------
+
+This tool allows you to bulk rename image files (including RAW ones)
+using their EXIF info, to a format containing the timestamp. For photographers
+aficionados, this makes it easier to sort and organize your photos, instead of
+keeping their original names.`,
+	Args: renamerArgs,
+	Run:  renamer,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

@@ -2,9 +2,11 @@
 FROM golang:alpine AS builder
 RUN apk add --no-cache git
 WORKDIR /app
+COPY src/go.mod .
+COPY src/go.sum .
+RUN go get -d -v ./...
 COPY src/ .
-RUN go get -d -v ./... \
-    && go build -o renamer main.go
+RUN go build -o renamer main.go
 
 # Final image
 FROM alpine:latest

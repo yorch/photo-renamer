@@ -19,7 +19,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-// Script original from: https://gist.github.com/eko/6b0caaefeaf82f2aa202804743040292
 package cmd
 
 import (
@@ -37,8 +36,18 @@ import (
 
 var counter int = 0
 
-func visit(pathname string, f os.FileInfo, err error) error {
-	if !f.IsDir() {
+func visit(pathname string, info os.FileInfo, err error) error {
+	if err != nil {
+		fmt.Printf("ERROR: %s\n", err)
+		return nil
+	}
+
+	if info == nil {
+		fmt.Printf("There was an error trying to read the given file / dir\n")
+		return nil
+	}
+
+	if !info.IsDir() {
 		openedFile, _ := os.Open(pathname)
 		exifData, err := exif.Decode(openedFile)
 
@@ -47,7 +56,7 @@ func visit(pathname string, f os.FileInfo, err error) error {
 			return nil
 		}
 
-		currentFilename := f.Name()
+		currentFilename := info.Name()
 		exifDatetime, _ := exifData.DateTime()
 		formattedDatetime := exifDatetime.Format("20060102150405")
 		newPathname, err := findAvailablePathname(pathname, currentFilename, formattedDatetime)
@@ -70,7 +79,7 @@ func findAvailablePathname(pathname string, currentFilename string, formattedDat
 	for count < 5 {
 		newFilename := fmt.Sprintf("%s%s", formattedDatetime, path.Ext(pathname))
 		if currentFilename == newFilename {
-			return "", errors.New("- File already renamed: " + currentFilename)
+			return "", errors.New("! File already renamed: " + pathname)
 		}
 		if count > 0 {
 			newFilename = fmt.Sprintf("%s-%v%s", formattedDatetime, count, path.Ext(pathname))
@@ -86,14 +95,29 @@ func findAvailablePathname(pathname string, currentFilename string, formattedDat
 }
 
 func renamer(cmd *cobra.Command, args []string) {
+	fmt.Println()
+	fmt.Printf("PHOTO RENAMER\n")
+	fmt.Printf("=============\n")
+	fmt.Println()
+
 	directory := args[0]
-	fmt.Printf("\n\nStarting photo-renamer\n======================\n\n")
+	fmt.Printf("Starting to rename images in directory '%s'...\n", directory)
+	fmt.Println()
 
 	startTime := time.Now()
-	filepath.Walk(directory, visit)
-	endTime := time.Now()
 
-	fmt.Printf("\n\nʕ◔ϖ◔ʔ I successfully renamed %d photos in %s\n\n", counter, endTime.Sub(startTime))
+	filepath.Walk(directory, visit)
+
+	fmt.Println()
+	fmt.Println()
+	endTime := time.Now()
+	duration := endTime.Sub(startTime)
+	if counter == 0 {
+		fmt.Printf("¯\\_(ツ)_/¯ Could not renamed any photo in %s\n", duration)
+	} else {
+		fmt.Printf("ʕ◔ϖ◔ʔ I successfully renamed %d photos in %s\n", counter, duration)
+	}
+	fmt.Println()
 }
 
 func renamerArgs(cmd *cobra.Command, args []string) error {

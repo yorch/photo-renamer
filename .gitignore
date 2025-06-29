@@ -11,4 +11,10 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# Coverage reports
+coverage.html
+
+# Main binary
+src/photo-renamer
+
 build/

@@ -23,6 +23,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -35,6 +36,21 @@ import (
 )
 
 var counter int = 0
+
+func visitDirectory(directory string) {
+	files, err := ioutil.ReadDir(directory)
+	if err != nil {
+		fmt.Printf("ERROR: %s\n", err)
+		return
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			pathname := filepath.Join(directory, file.Name())
+			visit(pathname, file, nil)
+		}
+	}
+}
 
 func visit(pathname string, info os.FileInfo, err error) error {
 	if err != nil {
@@ -101,12 +117,22 @@ func renamer(cmd *cobra.Command, args []string) {
 	fmt.Println()
 
 	directory := args[0]
-	fmt.Printf("Will rename images in directory '%s', continue? (yes/no)\n", directory)
+	recursiveMode, _ := cmd.Flags().GetBool("recursive")
+	
+	if recursiveMode {
+		fmt.Printf("Will rename images in directory '%s' and subdirectories, continue? (yes/no)\n", directory)
+	} else {
+		fmt.Printf("Will rename images in directory '%s' (non-recursive), continue? (yes/no)\n", directory)
+	}
 
 	if utils.AskForConfirmation() {
 		startTime := time.Now()
 
-		filepath.Walk(directory, visit)
+		if recursiveMode {
+			filepath.Walk(directory, visit)
+		} else {
+			visitDirectory(directory)
+		}
 
 		fmt.Println()
 		fmt.Println()

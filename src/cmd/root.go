@@ -28,6 +28,7 @@ import (
 )
 
 var cfgFile string
+var recursive bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -52,4 +53,8 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func init() {
+	rootCmd.Flags().BoolVarP(&recursive, "recursive", "r", false, "recursively process subdirectories")
 }

@@ -1,9 +1,8 @@
 # Builder
-FROM golang:alpine AS builder
-RUN apk add --no-cache git
+FROM golang:1.21-alpine AS builder
 WORKDIR /app
 COPY src/go.mod src/go.sum ./
-RUN go get -d -v ./...
+RUN go mod download
 COPY src/ .
 RUN go build -o renamer main.go
 

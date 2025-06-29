@@ -22,6 +22,7 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -31,6 +32,21 @@ import (
 )
 
 var mtimeCounter int = 0
+
+func updateMTimeDirectory(directory string) {
+	files, err := os.ReadDir(directory)
+	if err != nil {
+		fmt.Printf("ERROR: %s\n", err)
+		return
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			pathname := filepath.Join(directory, file.Name())
+			updateMTimeForFile(pathname, file, nil)
+		}
+	}
+}
 
 func updateMTimeForFile(pathname string, f os.FileInfo, err error) error {
 	openedFile, _ := os.Open(pathname)
@@ -57,9 +73,16 @@ func updateMTimeForFile(pathname string, f os.FileInfo, err error) error {
 
 func updateMTime(cmd *cobra.Command, args []string) {
 	directory := args[0]
+	recursiveMode, _ := cmd.Flags().GetBool("recursive")
 
 	startTime := time.Now()
-	filepath.Walk(directory, updateMTimeForFile)
+	
+	if recursiveMode {
+		filepath.Walk(directory, updateMTimeForFile)
+	} else {
+		updateMTimeDirectory(directory)
+	}
+	
 	endTime := time.Now()
 
 	fmt.Printf("\n\nʕ◔ϖ◔ʔ I successfully updated %d photos in %s\n", mtimeCounter, endTime.Sub(startTime))
@@ -74,4 +97,5 @@ var updateMTimeCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(updateMTimeCmd)
+	updateMTimeCmd.Flags().BoolP("recursive", "r", false, "recursively process subdirectories")
 }

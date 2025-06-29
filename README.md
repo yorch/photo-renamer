@@ -27,6 +27,12 @@ docker run -it -v `pwd`:/media yorch/photo-renamer /media
 
 This command will rename every image in the current directory using its EXIF creation date, like: `2020033110303.jpg`, for easier sorting and photo organization.
 
+To recursively process subdirectories, add the `--recursive` or `-r` flag:
+
+```sh
+docker run -it -v `pwd`:/media yorch/photo-renamer --recursive /media
+```
+
 > ProTip: You can create an `alias` with the previous command in your `.bashrc` or `.zshrc`, and you would be able to call it real fast every time you need to rename your images / photos.
 
 ### Locally
@@ -63,6 +69,26 @@ You can also run the app directly by:
 ```sh
 cd src/
 go run main.go
+```
+
+## Options
+
+The tool supports the following options:
+
+- `--recursive` or `-r`: Recursively process subdirectories. By default, only files in the specified directory are processed.
+- `--help` or `-h`: Display help information.
+
+Example usage:
+
+```sh
+# Process only files in the current directory
+./renamer /path/to/photos
+
+# Process files in subdirectories recursively  
+./renamer --recursive /path/to/photos
+
+# Update file modification times recursively
+./renamer updatemtime --recursive /path/to/photos
 ```
 
 ## TODO

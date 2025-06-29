@@ -25,6 +25,20 @@ import (
 	"log"
 )
 
+// ParseConfirmationResponse parses a user response and returns true for yes responses,
+// false for no responses, and an error for invalid responses.
+func ParseConfirmationResponse(response string) (bool, error) {
+	okayResponses := []string{"y", "Y", "yes", "Yes", "YES"}
+	nokayResponses := []string{"n", "N", "no", "No", "NO"}
+	if ContainsString(okayResponses, response) {
+		return true, nil
+	} else if ContainsString(nokayResponses, response) {
+		return false, nil
+	} else {
+		return false, fmt.Errorf("invalid response: %q", response)
+	}
+}
+
 // AskForConfirmation uses Scanln to parse user input. A user must type in "yes" or "no" and
 // then press enter. It has fuzzy matching, so "y", "Y", "yes", "YES", and "Yes" all count as
 // confirmations. If the input is not recognized, it will ask again. The function does not return
@@ -36,14 +50,11 @@ func AskForConfirmation() bool {
 	if err != nil {
 		log.Fatal(err)
 	}
-	okayResponses := []string{"y", "Y", "yes", "Yes", "YES"}
-	nokayResponses := []string{"n", "N", "no", "No", "NO"}
-	if ContainsString(okayResponses, response) {
-		return true
-	} else if ContainsString(nokayResponses, response) {
-		return false
-	} else {
-		fmt.Println("Please type yes or no and then press enter:")
-		return AskForConfirmation()
+	
+	if result, err := ParseConfirmationResponse(response); err == nil {
+		return result
 	}
+	
+	fmt.Println("Please type yes or no and then press enter:")
+	return AskForConfirmation()
 }

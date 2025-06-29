@@ -34,7 +34,7 @@ import (
 var mtimeCounter int = 0
 
 func updateMTimeDirectory(directory string) {
-	files, err := ioutil.ReadDir(directory)
+	files, err := os.ReadDir(directory)
 	if err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return
